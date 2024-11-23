@@ -1,66 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-const App: React.FC = () => {
-  const [telegramUser, setTelegramUser] = useState<any>(null);
-  const [logs, setLogs] = useState<string[]>([]); // State to store logs
-
-  const addLog = (message: string) => {
-    setLogs((prevLogs) => [...prevLogs, message]); // Append new logs
-  };
-
-  useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready(); // Initialize the Telegram WebApp
-      setTelegramUser(tg.initDataUnsafe?.user);
-      addLog('Telegram WebApp initialized.');
-      addLog(`User data: ${JSON.stringify(tg.initDataUnsafe?.user)}`);
-    } else {
-      addLog('Telegram WebApp is not available.');
-    }
-  }, []);
-
-  const handleCreateFamily = async () => {
-    const apiUrl = 'https://fdc1-93-152-210-204.ngrok-free.app/create-family';
-    addLog(`API URL: ${apiUrl}`);
-  
-    if (!telegramUser) {
-      addLog('Error: Telegram user data not available.');
-      return alert('Telegram user data is missing. Please try again.');
-    }
-  
-    try {
-      addLog('Sending request to create family...');
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: telegramUser.id,
-        }),
-      });
-  
-      addLog(`Response status: ${response.status}`);
-      const data = await response.json();
-      addLog(`Response data: ${JSON.stringify(data)}`);
-  
-      if (response.ok) {
-        alert('Family group created successfully!');
-      } else {
-        alert(`Failed to create family group: ${data.error}`);
-        addLog(`Error: ${data.error}`);
-      }
-    } catch (error) {
-      addLog(`Request failed: ${error}`);
-      alert('An error occurred. Please try again.');
-    }
+const App = () => {
+  const handleCreateGroup = () => {
+    // Send a pre-filled message to guide the user
+    const createGroupMessage = encodeURIComponent(
+      'Create a new group and add me as a member! Tap this link to invite me: https://t.me/YourBotUsername'
+    );
+    const createGroupUrl = `tg://msg?text=${createGroupMessage}`;
+    window.open(createGroupUrl, '_blank');
   };
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>Welcome to Family Creator</h1>
-      {telegramUser && <p>Hello, {telegramUser.first_name}!</p>}
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      <h1>Telegram Group Creator</h1>
+      <p>Click the button below to create a group and add this bot!</p>
       <button
         style={{
           padding: '10px 20px',
@@ -70,18 +23,10 @@ const App: React.FC = () => {
           borderRadius: '5px',
           cursor: 'pointer',
         }}
-        onClick={handleCreateFamily}
+        onClick={handleCreateGroup}
       >
-        Create Family
+        Create Group
       </button>
-      <div style={{ marginTop: '20px', textAlign: 'left', maxHeight: '200px', overflowY: 'auto' }}>
-        <h3>Logs:</h3>
-        <ul>
-          {logs.map((log, index) => (
-            <li key={index}>{log}</li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
