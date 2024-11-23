@@ -21,7 +21,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleCreateFamily = async () => {
-    const apiUrl = 'http://localhost:4000/create-family';
+    const apiUrl = 'https://tgbot-xn2d.onrender.com/create-family';
     addLog(`API URL: ${apiUrl}`);
   
     if (!telegramUser) {
